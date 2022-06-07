@@ -13,10 +13,14 @@ type PubSubPlugin = Plugin<{
 
 export const setupPlugin: PubSubPlugin['setupPlugin'] = async (meta) => {
     const { global, attachments, config } = meta
-    if (!attachments.googleCloudKeyJson) {
+
+    const googleCloudKeyJson = process.env.GCP_KEY_JSON
+    const topicId = process.env.GCP_TOPIC_ID
+
+    if (!googleCloudKeyJson) {
         throw new Error('JSON config not provided!')
     }
-    if (!config.topicId) {
+    if (!topicId) {
         throw new Error('Topic ID not provided!')
     }
 
@@ -26,7 +30,7 @@ export const setupPlugin: PubSubPlugin['setupPlugin'] = async (meta) => {
             projectId: credentials['project_id'],
             credentials,
         })
-        global.pubSubTopic = global.pubSubClient.topic(config.topicId);
+        global.pubSubTopic = global.pubSubClient.topic(topicId);
 
         // topic exists
         await global.pubSubTopic.getMetadata()
@@ -35,7 +39,7 @@ export const setupPlugin: PubSubPlugin['setupPlugin'] = async (meta) => {
         if (!error.message.includes("NOT_FOUND")) {
             throw new Error(error)
         }
-        console.log(`Creating PubSub Topic - ${config.topicId}`)
+        console.log(`Creating PubSub Topic - ${topicId}`)
 
         try {
             await global.pubSubTopic.create()
@@ -49,6 +53,8 @@ export const setupPlugin: PubSubPlugin['setupPlugin'] = async (meta) => {
 }
 
 export async function exportEvents(events: PluginEvent[], { global, config }: PluginMeta<PubSubPlugin>) {
+
+    const topicId = process.env.GCP_TOPIC_ID
     if (!global.pubSubClient) {
         throw new Error('No PubSub client initialized!')
     }
@@ -95,13 +101,13 @@ export async function exportEvents(events: PluginEvent[], { global, config }: Pl
         const end = Date.now() - start
 
         console.log(
-            `Published ${events.length} ${events.length > 1 ? 'events' : 'event'} to ${config.topicId}. Took ${
+            `Published ${events.length} ${events.length > 1 ? 'events' : 'event'} to ${topicId}. Took ${
                 end / 1000
             } seconds.`
         )
     } catch (error) {
         console.error(
-            `Error publishing ${events.length} ${events.length > 1 ? 'events' : 'event'} to ${config.topicId}: `,
+            `Error publishing ${events.length} ${events.length > 1 ? 'events' : 'event'} to ${topicId}: `,
             error
         )
         throw new RetryError(`Error publishing to Pub/Sub! ${JSON.stringify(error.errors)}`)
