@@ -15,14 +15,16 @@ export const setupPlugin: PubSubPlugin['setupPlugin'] = async (meta) => {
     const { global, attachments, config } = meta
 
     const googleCloudKeyJson = process.env.GCP_KEY_JSON
-    const topicId = process.env.GCP_TOPIC_ID
+    const _topicId = process.env.GCP_TOPIC_ID
 
     if (!googleCloudKeyJson) {
         throw new Error('JSON config not provided!')
     }
-    if (!topicId) {
+    if (!_topicId) {
         throw new Error('Topic ID not provided!')
     }
+
+    let topicId = new Buffer(_topicId, 'base64');
 
     try {
         const credentials = JSON.parse(attachments.googleCloudKeyJson.contents.toString())
