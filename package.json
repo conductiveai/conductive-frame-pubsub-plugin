@@ -6,7 +6,7 @@
   "devDependencies": {
     "@google-cloud/pubsub": "^2.16.0",
     "@posthog/plugin-contrib": "^0.0.5",
-    "@posthog/plugin-scaffold": "^0.12.0",
+    "@posthog/plugin-scaffold": "^0.12.10",
     "@types/generic-pool": "^3.1.9",
     "generic-pool": "^3.7.8"
   }
