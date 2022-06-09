@@ -1,5 +1,5 @@
-import { Plugin, PluginMeta, PluginEvent, RetryError } from '@posthog/plugin-scaffold'
 import { PubSub, Topic } from "@google-cloud/pubsub"
+import { Plugin, PluginMeta, PluginEvent, RetryError } from '@posthog/plugin-scaffold'
 
 type PubSubPlugin = Plugin<{
     global: {
